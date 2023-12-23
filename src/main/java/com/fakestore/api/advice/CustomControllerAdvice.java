@@ -1,5 +1,7 @@
 package com.fakestore.api.advice;
 
+import com.fakestore.api.exception.ProductAlreadyExistsException;
+import com.fakestore.api.exception.ProductNotFoundException;
 import com.fakestore.api.exception.UserAlreadyExistsException;
 import com.fakestore.api.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -19,5 +21,16 @@ public class CustomControllerAdvice {
     public ResponseEntity<Object> handleUserAlreadyExistsException(UserAlreadyExistsException ex){
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<Object> handleProductNotFoundException(ProductNotFoundException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ProductAlreadyExistsException.class)
+    public ResponseEntity<Object> handleProductAlreadyExistsException(ProductAlreadyExistsException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
 
 }
