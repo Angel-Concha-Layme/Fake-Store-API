@@ -33,8 +33,8 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @Column(name = "image_uri")
-    private String imageUri;
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @Column(name = "created_at")
     private LocalDate createdAt;
