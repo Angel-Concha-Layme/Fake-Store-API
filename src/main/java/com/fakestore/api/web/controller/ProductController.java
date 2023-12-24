@@ -44,7 +44,6 @@ public class ProductController {
         return new ResponseEntity<>(productResponseDto, HttpStatus.OK);
     }
 
-    // /create
     @PostMapping("/create")
     public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductCreationDTO productCreationDTO){
         Product createdProduct = productService.createProduct(productCreationDTO);
@@ -63,7 +62,7 @@ public class ProductController {
 
         return new ResponseEntity<>(productResponseDto, HttpStatus.CREATED);
     }
-    // /update/{id}
+
     @PutMapping("/update/{id}")
     public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Long id, @RequestBody ProductCreationDTO productCreationDTO){
         Product updatedProduct = productService.updateProduct(id, productCreationDTO);
@@ -88,7 +87,5 @@ public class ProductController {
         productService.deleteProduct(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-
 }
 
