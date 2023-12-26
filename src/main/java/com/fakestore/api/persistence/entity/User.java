@@ -1,5 +1,6 @@
 package com.fakestore.api.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,6 +30,7 @@ public class User {
     @Column(name = "created_at")
     private LocalDate createdAt;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
 }

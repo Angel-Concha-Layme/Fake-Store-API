@@ -8,6 +8,9 @@ import com.fakestore.api.persistence.entity.User;
 import com.fakestore.api.persistence.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,14 +20,18 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public User createUser(UserCreationDTO userDto) {
         validateUserDoesNotExistForName(userDto.username());
 
         User user = new User();
+
         user.setUsername(userDto.username());
-        user.setPassword(userDto.password());
+        // ecript password with bcrypt encoder in class SecurityConfig.java
+        user.setPassword(passwordEncoder.encode(userDto.password()));
+
         user.setEmail(userDto.email());
         user.setCreatedAt(LocalDate.now());
 
@@ -60,5 +67,12 @@ public class UserService {
     public void deleteUser(Long id) {
         User user = getUserById(id);
         userRepository.delete(user);
+    }
+
+    public User getAuthenticatedUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String emailAuth = authentication.getName();
+        return userRepository.findOneByEmail(emailAuth)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + emailAuth));
     }
 }
