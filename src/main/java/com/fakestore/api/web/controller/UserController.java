@@ -1,6 +1,5 @@
 package com.fakestore.api.web.controller;
 
-
 import com.fakestore.api.dto.ChangePasswordDTO;
 import com.fakestore.api.dto.UserResponseDTO;
 import com.fakestore.api.dto.UserUpdateDTO;
@@ -8,22 +7,29 @@ import com.fakestore.api.persistence.entity.User;
 import com.fakestore.api.service.UserService;
 import com.fakestore.api.dto.UserCreationDTO;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/users")
+@AllArgsConstructor
 public class UserController {
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers(){
-        List<User> userList = userService.getAllUsers();
+    public ResponseEntity<Page<UserResponseDTO>> getAllUsers(
+            @PageableDefault(size = 5) Pageable pageable
+            ){
+        Page<UserResponseDTO> userList = userService.getAllUsers(pageable);
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
@@ -38,7 +44,7 @@ public class UserController {
                 createdUser.getCreatedAt()
         );
 
-        return new ResponseEntity<UserResponseDTO>(userResponseDTO, HttpStatus.OK);
+        return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
     }
 
     @PostMapping("/create")
@@ -50,12 +56,17 @@ public class UserController {
                 createdUser.getEmail(),
                 createdUser.getCreatedAt()
         );
-        return new ResponseEntity<UserResponseDTO>(userResponseDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(userResponseDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserUpdateDTO userUpdateDto){
+        User user = userService.getAuthenticatedUser();
 
+        if(!Objects.equals(user.getId(), id)){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         User updatedUser = userService.updateUser(id, userUpdateDto);
         UserResponseDTO userResponseDTO = new UserResponseDTO(
                 updatedUser.getId(),
@@ -63,7 +74,7 @@ public class UserController {
                 updatedUser.getEmail(),
                 updatedUser.getCreatedAt()
         );
-        return new ResponseEntity<UserResponseDTO>(userResponseDTO, HttpStatus.OK);
+        return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -73,8 +84,13 @@ public class UserController {
     }
 
     @PostMapping("{id}/change-password")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordDTO changePasswordDTO){
-        //return new ResponseEntity<>(HttpStatus.OK);
-        return null;
+        User user = userService.getAuthenticatedUser();
+        if(!Objects.equals(user.getId(), id)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        userService.changePassword(id, changePasswordDTO);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
