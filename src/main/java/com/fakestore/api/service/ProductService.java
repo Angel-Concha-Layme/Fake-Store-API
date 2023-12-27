@@ -8,10 +8,16 @@ import com.fakestore.api.persistence.entity.Category;
 import com.fakestore.api.persistence.entity.Product;
 import com.fakestore.api.persistence.repository.CategoryRepository;
 import com.fakestore.api.persistence.repository.ProductRepository;
+import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,10 +29,44 @@ public class ProductService {
     private CategoryRepository categoryRepository;
 
 
-    public List<ProductResponseDTO> getAllProducts() {
-        return productRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public Page<ProductResponseDTO> getAllProducts(Pageable pageable, String name, Double priceMin, Double priceMax, Long categoryId, Integer stockQuantityMin, Integer stockQuantityMax, LocalDateTime createdAtMin, LocalDateTime createdAtMax) {
+        Specification<Product> spec = buildSpecification(name, priceMin, priceMax, categoryId, stockQuantityMin, stockQuantityMax, createdAtMin, createdAtMax);
+        Page<Product> productList = productRepository.findAll(spec, pageable);
+        return productList.map(this::convertToDto);
+
+        //Page<Product> productList = productRepository.findAll(pageable);
+        //return productList.map(this::convertToDto);
+    }
+
+    private Specification<Product> buildSpecification(String name, Double priceMin, Double priceMax, Long categoryId, Integer stockQuantityMin, Integer stockQuantityMax, LocalDateTime createdAtMin, LocalDateTime createdAtMax) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (name != null) {
+                predicates.add(cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+            }
+            if (priceMin != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("price"), priceMin));
+            }
+            if (priceMax != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("price"), priceMax));
+            }
+            if (categoryId != null) {
+                predicates.add(cb.equal(root.get("category").get("id"), categoryId));
+            }
+            if (stockQuantityMin != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("stockQuantity"), stockQuantityMin));
+            }
+            if (stockQuantityMax != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("stockQuantity"), stockQuantityMax));
+            }
+            if (createdAtMin != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("createdAt"), createdAtMin));
+            }
+            if (createdAtMax != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), createdAtMax));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
     public Product getProductById(Long id) {
@@ -92,5 +132,9 @@ public class ProductService {
         product.setUpdatedAt(LocalDate.now());
         productRepository.save(product);
         return product;
+    }
+
+    public boolean existsById(Long aLong) {
+        return productRepository.existsById(aLong);
     }
 }
