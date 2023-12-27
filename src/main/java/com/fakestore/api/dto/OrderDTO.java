@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record OrderDTO(
-        LocalDate orderDate,
-        OrderStatus orderStatus,
         List<OrderDetailDTO> orderDetails
 ) {
 }
