@@ -1,6 +1,8 @@
 package com.fakestore.api.service;
 
+import com.fakestore.api.dto.ChangePasswordDTO;
 import com.fakestore.api.dto.UserCreationDTO;
+import com.fakestore.api.dto.UserResponseDTO;
 import com.fakestore.api.dto.UserUpdateDTO;
 import com.fakestore.api.exception.UserAlreadyExistsException;
 import com.fakestore.api.exception.UserNotFoundException;
@@ -8,6 +10,8 @@ import com.fakestore.api.persistence.entity.User;
 import com.fakestore.api.persistence.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,8 +50,18 @@ public class UserService {
                 });
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
+        Page<User> userList = userRepository.findAll(pageable);
+        return userList.map(this::convertToDto);
+    }
+
+    public UserResponseDTO convertToDto(User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getCreatedAt()
+        );
     }
 
     public User getUserById(Long id) {
@@ -74,5 +88,11 @@ public class UserService {
         String emailAuth = authentication.getName();
         return userRepository.findOneByEmail(emailAuth)
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + emailAuth));
+    }
+
+    public void changePassword(Long id, ChangePasswordDTO changePasswordDTO) {
+        User user = getUserById(id);
+        user.setPassword(passwordEncoder.encode(changePasswordDTO.newPassword()));
+        userRepository.save(user);
     }
 }
