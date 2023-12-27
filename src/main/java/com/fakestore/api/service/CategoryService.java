@@ -6,10 +6,9 @@ import com.fakestore.api.exception.CategoryNotFoundException;
 import com.fakestore.api.persistence.entity.Category;
 import com.fakestore.api.persistence.repository.CategoryRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -23,10 +22,9 @@ public class CategoryService {
         return category;
     }
 
-    public List<CategoryResponseDTO> getAllCategories() {
-        return categoryRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public Page<CategoryResponseDTO> getAllCategories(Pageable pageable) {
+        Page<Category> categoryList = categoryRepository.findAll(pageable);
+        return categoryList.map(this::convertToDto);
     }
 
     public CategoryResponseDTO convertToDto(Category category) {

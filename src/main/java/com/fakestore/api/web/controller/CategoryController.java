@@ -2,15 +2,16 @@ package com.fakestore.api.web.controller;
 
 import com.fakestore.api.dto.CategoryCreationDTO;
 import com.fakestore.api.dto.CategoryResponseDTO;
-import com.fakestore.api.dto.ProductResponseDTO;
 import com.fakestore.api.persistence.entity.Category;
 import com.fakestore.api.service.CategoryService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -33,8 +34,8 @@ public class CategoryController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories(){
-        List<CategoryResponseDTO> categoryList = categoryService.getAllCategories();
+    public ResponseEntity<Page<CategoryResponseDTO>> getAllCategories(@PageableDefault(page = 0, size =5)Pageable pageable){
+        Page<CategoryResponseDTO> categoryList = categoryService.getAllCategories(pageable);
         return new ResponseEntity<>(categoryList, HttpStatus.OK);
     }
 
