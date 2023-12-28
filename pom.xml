@@ -14,7 +14,7 @@
 	<name>Fake Store</name>
 	<description>API for Fake Store providing CRUD operations, authentication, filtering, and file upload capabilities</description>
 	<properties>
-		<java.version>21</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
