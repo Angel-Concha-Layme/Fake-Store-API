@@ -24,6 +24,8 @@ public class Category {
 
     private String description;
 
+    private String image;
+
     @OneToMany(mappedBy = "category")
     @JsonIgnore
     private List<Product> products;

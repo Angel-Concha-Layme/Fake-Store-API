@@ -27,6 +27,11 @@ public class User {
 
     private String email;
 
+    private String avatar;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @Column(name = "created_at")
     private LocalDate createdAt;
 

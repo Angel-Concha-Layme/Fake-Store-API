@@ -31,6 +31,7 @@ public class CategoryService {
         return new CategoryResponseDTO(
                 category.getId(),
                 category.getName(),
+                category.getImage(),
                 category.getDescription()
         );
     }

@@ -60,6 +60,8 @@ public class UserService {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
+                user.getAvatar(),
+                user.getRole(),
                 user.getCreatedAt()
         );
     }

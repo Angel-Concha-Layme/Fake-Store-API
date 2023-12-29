@@ -27,6 +27,7 @@ public class CategoryController {
         CategoryResponseDTO categoryResponseDto = new CategoryResponseDTO(
                 createdCategory.getId(),
                 createdCategory.getName(),
+                createdCategory.getImage(),
                 createdCategory.getDescription()
         );
 
@@ -46,6 +47,7 @@ public class CategoryController {
         CategoryResponseDTO categoryResponseDto = new CategoryResponseDTO(
                 category.getId(),
                 category.getName(),
+                category.getImage(),
                 category.getDescription()
         );
 
@@ -60,6 +62,7 @@ public class CategoryController {
         CategoryResponseDTO categoryResponseDto = new CategoryResponseDTO(
                 updatedCategory.getId(),
                 updatedCategory.getName(),
+                updatedCategory.getImage(),
                 updatedCategory.getDescription()
         );
 

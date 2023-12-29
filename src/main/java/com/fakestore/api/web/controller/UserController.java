@@ -41,6 +41,8 @@ public class UserController {
                 createdUser.getId(),
                 createdUser.getUsername(),
                 createdUser.getEmail(),
+                createdUser.getAvatar(),
+                createdUser.getRole(),
                 createdUser.getCreatedAt()
         );
 
@@ -54,6 +56,8 @@ public class UserController {
                 createdUser.getId(),
                 createdUser.getUsername(),
                 createdUser.getEmail(),
+                createdUser.getAvatar(),
+                createdUser.getRole(),
                 createdUser.getCreatedAt()
         );
         return new ResponseEntity<>(userResponseDTO, HttpStatus.CREATED);
@@ -72,6 +76,8 @@ public class UserController {
                 updatedUser.getId(),
                 updatedUser.getUsername(),
                 updatedUser.getEmail(),
+                updatedUser.getAvatar(),
+                updatedUser.getRole(),
                 updatedUser.getCreatedAt()
         );
         return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
