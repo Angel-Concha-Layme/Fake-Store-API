@@ -1,5 +1,6 @@
 package com.fakestore.api.dto;
 
+import com.fakestore.api.persistence.entity.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,6 +16,9 @@ public record UserCreationDTO(
         String password,
         @Email
         @NotNull
-        String email
+        String email,
+
+        String avatar,
+        Role role
 ) {
 }
