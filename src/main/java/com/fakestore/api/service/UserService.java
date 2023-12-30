@@ -38,6 +38,8 @@ public class UserService {
 
         user.setEmail(userDto.email());
         user.setCreatedAt(LocalDate.now());
+        user.setAvatar(userDto.avatar());
+        user.setRole(userDto.role());
 
         userRepository.save(user);
         return user;
@@ -96,5 +98,9 @@ public class UserService {
         User user = getUserById(id);
         user.setPassword(passwordEncoder.encode(changePasswordDTO.newPassword()));
         userRepository.save(user);
+    }
+
+    public Boolean isUsernameAvailable(String email) {
+        return userRepository.existsByEmail(email);
     }
 }
