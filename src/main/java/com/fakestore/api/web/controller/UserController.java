@@ -1,11 +1,8 @@
 package com.fakestore.api.web.controller;
 
-import com.fakestore.api.dto.ChangePasswordDTO;
-import com.fakestore.api.dto.UserResponseDTO;
-import com.fakestore.api.dto.UserUpdateDTO;
+import com.fakestore.api.dto.*;
 import com.fakestore.api.persistence.entity.User;
 import com.fakestore.api.service.UserService;
-import com.fakestore.api.dto.UserCreationDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -98,5 +95,11 @@ public class UserController {
         }
         userService.changePassword(id, changePasswordDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/is-available")
+    public ResponseEntity<Boolean> isUsernameAvailable(@RequestBody emailDTO emailDTO){
+        Boolean isAvailable = userService.isUsernameAvailable(emailDTO.email());
+        return new ResponseEntity<>(isAvailable, HttpStatus.OK);
     }
 }
