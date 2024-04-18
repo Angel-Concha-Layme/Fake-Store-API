@@ -1,4 +1,4 @@
-# FAKE STORE API
+# FAKE STORE API [closed]
 
 ## Descripción
 
